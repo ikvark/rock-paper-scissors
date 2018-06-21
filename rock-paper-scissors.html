@@ -1,4 +1,7 @@
 <script>
+var round = 1; //declared outside functions so round can be modified in
+              //cases of improper input
+
 function computerPlay () {
   let x = Math.floor(Math.random()*3+1);
 
@@ -18,51 +21,51 @@ function gameResult (playerSelectIn,cScore,pScore) {
     gameMsg = "It's a tie!";
     playScore = pScore;
     compScore = cScore;
-    return;
-  } else {
-    switch(compSelect){ //Check each case to see who wins
+    return [gameMsg, compScore, playScore];
+  }
+  else {
+    switch(playerSelect){ //Check each case to see who wins
       case "Rock":
-        playerSelect == "Paper" ? winOrLose = 1 : winOrLose = 0;
+        compSelect == "Paper" ? winOrLose = 0 : winOrLose = 1;
         break;
       case "Paper":
-        playerSelect == "Scissors" ? winOrLose = 1 : winOrLose = 0;
+        compSelect == "Scissors" ? winOrLose = 0 : winOrLose = 1;
         break;
       case "Scissors":
-        playerSelect == "Rock" ? winOrLose = 1 : winOrLose = 0;
+        compSelect == "Rock" ? winOrLose = 0 : winOrLose = 1;
         break;
       default:
         gameMsg = "Error! Please type \"Rock\", \"Paper\", or \"Scissors\"!";
         playScore = pScore;
         compScore = cScore;
         round--;
-        return;
+        return [gameMsg, compScore, playScore];
     }
   }
 
   if (winOrLose == 0){ //win or lose statements and return
     gameMsg = `You Lose! ${compSelect} beats ${playerSelect}`;
     playScore = pScore;
-    compScore = cScore++;
-    return;
+    compScore = cScore+1;
+    return [gameMsg, compScore, playScore];
   }
   else{
     gameMsg = `You Win! ${playerSelect} beats ${compSelect}`;
-    playScore = pScore++;
+    playScore = pScore+1;
     compScore = cScore;
-    return
+    return [gameMsg, compScore, playScore];
   }
 
 }
 
 function game() {
   let compScore = playScore = 0;
-  let round = 1;
   let gameMsg = "";
 
   while (round < 6){
     let playPrompt = prompt('Type: "Rock", "Paper", or "Scissors"');
-    gameResult(playPrompt,compScore,playScore);
-    console.log(`Round ${round}\n${gameMsg}\nYour Score: ${playScore}\nComputer Score: ${compScore}`);
+    [gameMsg, compScore, playScore] = gameResult(playPrompt,compScore,playScore);
+    alert(`Round ${round}\n${gameMsg}\nYour Score: ${playScore}\nComputer Score: ${compScore}`);
     round++;
   }
 }
