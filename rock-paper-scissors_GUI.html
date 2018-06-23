@@ -1,0 +1,148 @@
+<style>
+  h1 {
+    text-align: center;
+    font-size: 32px;
+    font-family: monospace;
+    padding: 20px 0 40px 0;
+  }
+
+  #scoreArea {
+    display: flex;
+    flex-wrap: wrap;
+    border-style: solid;
+    border-width: thin;
+    width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 0 20px 0;
+  }
+
+  #scoreArea p {
+    text-align: center;
+    font-size: 24px;
+    font-family: "arial";
+    font-weight: 800;
+    flex-basis: 100%;
+  }
+
+  #playArea {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    border-style: solid;
+    border-width: thin;
+    width: 500px;
+    margin: 0 auto 0 auto;
+    padding: 20px 0 20px 0;
+  }
+
+  .btn {
+    padding: 4px 8px 4px 8px;
+    font-size: 16px;
+  }
+
+  .score {
+    flex-basis: 50%;
+    text-align: center;
+    font-family: "arial";
+    font-size: 18px;
+    font-weight: 400;
+  }
+
+</style>
+
+<body>
+  <h1>Rock, Paper, Scissors - XTreme</h1>
+  <div id="main">
+    <div id="scoreArea">
+      <p id="round"></p>
+      <p id="result"></p>
+      <div class="score" id="pScore"></div>
+      <div class="score" id="cScore"></div>
+    </div>
+    <div id="playArea">
+      <button class="btn" id="rock">Rock</button>
+      <button class="btn" id="paper">Paper</button>
+      <button class="btn" id="scissor">Scissor</button>
+    </div>
+  </div>
+</body>
+
+<script>
+var round = 1; //declared outside functions so round can be modified in
+              //cases of improper input
+
+function computerPlay () {
+  let x = Math.floor(Math.random()*3+1);
+
+  return x == 3 ? "Rock" : x == 2 ? "Paper" : "Scissors";
+}
+
+function formatSelect (strIn) {
+  return strIn.charAt(0).toUpperCase() + strIn.slice(1).toLowerCase();
+}
+
+function gameResult (playerSelectIn,cScore,pScore) {
+  let compSelect = computerPlay();
+  let playerSelect = formatSelect(playerSelectIn);
+  let winOrLose = 0;
+  const roundOut = document.querySelector('#round');
+  const resultOut = document.querySelector('#result');
+  const pScoreOut = document.querySelector('#pScore');
+  const cScoreOut = document.querySelector('#cScore');
+
+  roundOut.textContent = 'Round: ' + round;
+  if (compSelect == playerSelect){ //eliminate ties first
+    resultOut.textContent = "It's a tie!";
+    playScore = pScore;
+    compScore = cScore;
+  }
+  else {
+    switch(playerSelect){ //Check each case to see who wins
+      case "Rock":
+        compSelect == "Paper" ? winOrLose = 0 : winOrLose = 1;
+        break;
+      case "Paper":
+        compSelect == "Scissors" ? winOrLose = 0 : winOrLose = 1;
+        break;
+      case "Scissors":
+        compSelect == "Rock" ? winOrLose = 0 : winOrLose = 1;
+        break;
+      default:
+        gameMsg = "Error! Please type \"Rock\", \"Paper\", or \"Scissors\"!";
+        playScore = pScore;
+        compScore = cScore;
+        round--;
+        return [gameMsg, compScore, playScore];
+    }
+  }
+
+  if (winOrLose == 0){ //win or lose statements and return
+    resultOut.textContent = `You Lose! ${compSelect} beats ${playerSelect}`;
+    playScore = pScore;
+    compScore = cScore+1;
+  }
+  else{
+    resultOut.textContent = `You Win! ${playerSelect} beats ${compSelect}`;
+    playScore = pScore+1;
+    compScore = cScore;
+  }
+
+}
+
+function game() {
+  let compScore = playScore = 0;
+  let gameMsg = "";
+
+  let playPrompt = prompt('Type: "Rock", "Paper", or "Scissors"');
+  [gameMsg, compScore, playScore] = gameResult(playPrompt,compScore,playScore);
+  alert(`Round ${round}\n${gameMsg}\nYour Score: ${playScore}\nComputer Score: ${compScore}`);
+  round++;
+}
+
+const buttons = document.querySelectorAll('button');
+buttons.forEach((button) => {
+  button.addEventListener('click', gameResult(button.id,pScore,cScore));
+});
+
+</script>
