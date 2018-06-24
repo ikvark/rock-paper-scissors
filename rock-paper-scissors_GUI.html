@@ -14,7 +14,7 @@
     width: 500px;
     margin-left: auto;
     margin-right: auto;
-    padding: 0 0 20px 0;
+    padding: 16px 0 20px 0;
   }
 
   #scoreArea p {
@@ -23,6 +23,8 @@
     font-family: "arial";
     font-weight: 800;
     flex-basis: 100%;
+    height: 25px;
+    margin: 8px 0 8px 0;
   }
 
   #playArea {
@@ -47,6 +49,7 @@
     font-family: "arial";
     font-size: 18px;
     font-weight: 400;
+    padding: 20px 0 0 0;
   }
 
 </style>
@@ -55,10 +58,10 @@
   <h1>Rock, Paper, Scissors - XTreme</h1>
   <div id="main">
     <div id="scoreArea">
-      <p id="round"></p>
+      <p id="round">Round 0</p>
       <p id="result"></p>
-      <div class="score" id="pScore"></div>
-      <div class="score" id="cScore"></div>
+      <div class="score" id="pScore">Your Score: 0</div>
+      <div class="score" id="cScore">Computer's Score: 0</div>
     </div>
     <div id="playArea">
       <button class="btn" id="rock">Rock</button>
@@ -71,18 +74,19 @@
 <script>
 var round = 1; //declared outside functions so round can be modified in
               //cases of improper input
+let playScore = compScore = 0;
 
 function computerPlay () {
   let x = Math.floor(Math.random()*3+1);
 
-  return x == 3 ? "Rock" : x == 2 ? "Paper" : "Scissors";
+  return x == 3 ? "Rock" : x == 2 ? "Paper" : "Scissor";
 }
 
 function formatSelect (strIn) {
   return strIn.charAt(0).toUpperCase() + strIn.slice(1).toLowerCase();
 }
 
-function gameResult (playerSelectIn,cScore,pScore) {
+function gameResult (playerSelectIn) {
   let compSelect = computerPlay();
   let playerSelect = formatSelect(playerSelectIn);
   let winOrLose = 0;
@@ -94,8 +98,6 @@ function gameResult (playerSelectIn,cScore,pScore) {
   roundOut.textContent = 'Round: ' + round;
   if (compSelect == playerSelect){ //eliminate ties first
     resultOut.textContent = "It's a tie!";
-    playScore = pScore;
-    compScore = cScore;
   }
   else {
     switch(playerSelect){ //Check each case to see who wins
@@ -103,46 +105,42 @@ function gameResult (playerSelectIn,cScore,pScore) {
         compSelect == "Paper" ? winOrLose = 0 : winOrLose = 1;
         break;
       case "Paper":
-        compSelect == "Scissors" ? winOrLose = 0 : winOrLose = 1;
+        compSelect == "Scissor" ? winOrLose = 0 : winOrLose = 1;
         break;
-      case "Scissors":
+      case "Scissor":
         compSelect == "Rock" ? winOrLose = 0 : winOrLose = 1;
         break;
-      default:
-        gameMsg = "Error! Please type \"Rock\", \"Paper\", or \"Scissors\"!";
-        playScore = pScore;
-        compScore = cScore;
-        round--;
-        return [gameMsg, compScore, playScore];
+    }
+
+    if (winOrLose == 0){ //generate win or lose statements
+      compScore++;
+      resultOut.textContent = `You Lose! ${compSelect} beats ${playerSelect}`;
+    }
+    else{
+      playScore++;
+      resultOut.textContent = `You Win! ${playerSelect} beats ${compSelect}`;
     }
   }
 
-  if (winOrLose == 0){ //win or lose statements and return
-    resultOut.textContent = `You Lose! ${compSelect} beats ${playerSelect}`;
-    playScore = pScore;
-    compScore = cScore+1;
+
+
+//print win/lose
+  cScoreOut.textContent = `Computer's Score: ${compScore}`;
+  pScoreOut.textContent = `Your Score: ${playScore}`;
+
+  if (compScore >= 5 | playScore >= 5){ //termination condition
+    compScore > playScore ?
+      resultOut.textContent = `Game Over! You Lost ${compScore} to ${playScore}!` :
+      resultOut.textContent = `Game Over! You Won ${playScore} to ${compScore}!`;
+    playScore = compScore = round = 0;
   }
-  else{
-    resultOut.textContent = `You Win! ${playerSelect} beats ${compSelect}`;
-    playScore = pScore+1;
-    compScore = cScore;
-  }
-
-}
-
-function game() {
-  let compScore = playScore = 0;
-  let gameMsg = "";
-
-  let playPrompt = prompt('Type: "Rock", "Paper", or "Scissors"');
-  [gameMsg, compScore, playScore] = gameResult(playPrompt,compScore,playScore);
-  alert(`Round ${round}\n${gameMsg}\nYour Score: ${playScore}\nComputer Score: ${compScore}`);
   round++;
 }
 
+
 const buttons = document.querySelectorAll('button');
 buttons.forEach((button) => {
-  button.addEventListener('click', gameResult(button.id,pScore,cScore));
+  button.addEventListener('click', gameResult.bind(this, button.id));
 });
 
 </script>
